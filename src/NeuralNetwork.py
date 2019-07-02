@@ -1,35 +1,39 @@
 #!/bin/python
 import numpy as np
 import functions
-import sys
 
 # dimension of weights1 and weights2?
 # number of layers? (will be more weights)
 # iterations?
 
-# read in file and output a file with prediction
-# Spark DataFrame -> Spark RDD -> Numpy Arrays & vice versa
-# https://stackoverflow.com/questions/54190994/how-to-convert-spark-rdd-to-a-numpy-array
-# https://stackoverflow.com/questions/36198264/convert-numpy-matrix-into-pyspark-rdd
+# hidden layer
+# bias (disconnected layers)
 
+# read in file and output a file with prediction
+
+# methods:
 # cv: training, validation & testing set
+# split to train, cv & testing set
 # accuracy & precision: confusion matrix (for binary classificaiton)
 # accuracy
 
 # feature significance, entropy?
 
 class NeuralNetwork:
-  def __init__(self, feature, label, dimension):
+  def __init__(self, feature, label, dimension, iterations):
     self.input = feature
     self.weights1 = np.random.rand(self.input.shape[1], dimension)
     self.weights2 = np.random.rand(dimension, 1)
     self.label = label
+    self.iterations = iterations
     self.output = np.zeros(self.label.shape)
-
+  
+  # applying existing Neural Network weights (model hyper-parameters) on input data to validate against real labels
   def feedforward(self):
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
     self.output = functions.sigmoid(np.dot(self.layer1, self.weights2))
 
+  # training the Neural Network model by updating the weights (model hyper-parameters) from the real labels against previously applied input data
   def backprop(self):
     # application of the chain rule to find derivative of the loss function with respect to weights2 and weights1
     d_weights2 = np.dot(self.layer1.T, (2*(self.label - self.output) * functions.sigmoid_derivative(self.output)))
@@ -39,24 +43,14 @@ class NeuralNetwork:
     self.weights1 += d_weights1
     self.weights2 += d_weights2
 
-if __name__ == "__main__":
-  x = np.array([[0,0,0],
-                [0,0,1],
-                [0,1,0],
-                [0,1,1],
-                [1,0,0],
-                [1,0,1],
-                [1,1,1],
-                [1,1,0]])
-  y = np.array([[0], [0], [0], [0], [1], [1], [1], [1]])
+  def train(self):
+    for i in range(self.iterations):
+      self.feedforward()
+      self.backprop()
 
-  dimension = int(sys.argv[1])
-  iteration = int(sys.argv[2])
-  nn = NeuralNetwork(x, y, dimension)
+    self.feedforward()
 
-  for i in range(iteration):
-    nn.feedforward()
-    nn.backprop()
+  #def test(self):
 
-  nn.feedforward()
-  print(nn.output)
+  def summary(self):
+    return self.output
