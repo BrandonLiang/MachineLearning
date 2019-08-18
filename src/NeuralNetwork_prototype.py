@@ -36,7 +36,6 @@ class NeuralNetwork:
     # dimension of variable *dimension* equals the number of hidden layers
     self.input = feature
     self.label = label
-    # dimension means the number of hidden neurons in the hidden layer
     self.weights1 = np.random.rand(self.input.shape[1], dimension)
     self.weights2 = np.random.rand(dimension, self.label.shape[1])
     self.iterations = iterations
@@ -68,6 +67,3 @@ class NeuralNetwork:
 
   def summary(self):
     return self.output
-
-  def total_error(self):
-    return (self.label - self.output)

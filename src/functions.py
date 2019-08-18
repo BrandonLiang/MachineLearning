@@ -27,7 +27,7 @@ class Spark_Function:
         # local:
         # spark://master:7077
 
-      self.df = self.sparkSession.read.option("header", "true").csv(filepath)
+      self.df = self.sparkSession.read.option("header", "true").option("inferSchema", "false").csv(filepath)
       self.rdd = self.df.rdd
 
     # convert csv file into a Spark RDD (Resilient Distributed Dataset)
@@ -37,6 +37,10 @@ class Spark_Function:
     # convert csv file into a Spark DataFrame
     def to_df(self):
       return self.df
+
+    def df_show(self, n = 10, s = True):
+      self.df.show(n, s)
+      return
 
     # convert csv file into a Spark DataSet - need RowEncoder
     # https://jaceklaskowski.gitbooks.io/mastering-spark-sql/spark-sql-DataFrame.html
