@@ -1,6 +1,7 @@
 #!/bin/python
 
 import numpy as np
+import pandas as pd
 from pyspark.sql import SparkSession
 
 # sigmoid function (for Neural Network feed-forward)
@@ -48,3 +49,11 @@ class Spark_Function:
     # convert csv file from a Spark RDD to a 2-dimensional numpy array
     def rdd_to_np(self):
       return np.array(self.rdd.collect())
+
+class Pandas_Function:
+  def __init__(self, filepath, nrows, low_memory = True):
+    self.df = pd.read_csv(filepath, encoding = "utf-8", delimiter = ",", low_memory = low_memory, nrows = int(nrows))
+
+  def df_show(self):
+    print(self.df.to_string())
+    return
