@@ -1,0 +1,3 @@
+spark_warehouse/
+__pycache__/
+*.pyc
