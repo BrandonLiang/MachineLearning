@@ -6,7 +6,14 @@ from pyspark.sql import SparkSession
 
 # sigmoid function (for Neural Network feed-forward)
 def sigmoid(x):
-    return 1.0/(1+ np.exp(-x))
+    return 1.0/(1+ np.exp(-x.astype(float)))
+
+# binary classification - works closely with the output from sigmoid function
+# domain specifies the two possible outcomes
+def binary_classify(x, domain):
+    condlist = [x < 0.5, x >= 0.5]
+    choicelist = [domain[0], domain[1]]
+    return np.select(condlist, choicelist)
 
 # first derivative of sigmoid function (for Neural Network back-propagation)
 def sigmoid_derivative(x):

@@ -26,6 +26,16 @@ from functions import *
 #spark_function = Spark_Function("/Users/brandonliang/external/NBA_Data/NN_Each_Game_Distribution_4_15.csv")
 #spark_function.to_df().show()
 
+'''
+filepath = "/Users/brandonliang/src/MachineLearning/csv/first_column.csv"
+header = 'infer'
+label_transformation = None
+'''
+
+filepath = "/Volumes/external/NBA_Data/NN_Each_Game_Distribution_4_15_ready.csv"
+header = None
+label_transformation = "L"
+'''
 x = np.array([[0,0,0],
               [0,0,1],
               [0,1,0],
@@ -35,11 +45,15 @@ x = np.array([[0,0,0],
               [1,1,1],
               [1,1,0]])
 y = np.array([[0], [0], [0], [0], [1], [1], [1], [1]])
+'''
 
-dimension = int(sys.argv[1])
-iteration = int(sys.argv[2])
-nn = NeuralNetwork(x, y, dimension, iteration)
+#dimension = int(sys.argv[1])
+dimension = [4, 4]
+iteration = int(sys.argv[1])
+#nn = NeuralNetwork(x, y, dimension, iteration)
+nn = NeuralNetwork(filepath, -1, dimension, iteration, infer_header = header, label_transformation = label_transformation)
 
 nn.train()
-print(nn.summary())
-print(nn.total_error())
+#print(nn.summary())
+#print(nn.total_error())
+#print(nn.sme())

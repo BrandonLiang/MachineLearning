@@ -1,5 +1,9 @@
 #!/bin/python
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import time
+import time
 import functions
 
 # to understand how a Neural Network works
@@ -24,24 +28,50 @@ import functions
 # read in file and output a file with prediction
 
 # methods:
-# cv: training, validation & testing set
+# *cv: training, validation & testing set -- read more about purpose and process of CV!
 # split to train, cv & testing set
 # accuracy & precision: confusion matrix (for binary classificaiton)
 # accuracy
 
-# feature significance, entropy?
+# feature significance, entropy? -- yes, add this!
+
+# save plot fig
+
+# generalize hidden layers and weights based on $dimension
 
 class NeuralNetwork:
-  def __init__(self, feature, label, dimension, iterations):
-    # dimension of variable *dimension* equals the number of hidden layers
-    self.input = feature
-    self.label = label
-    # dimension means the number of hidden neurons in the hidden layer
-    self.weights1 = np.random.rand(self.input.shape[1], dimension)
-    self.weights2 = np.random.rand(dimension, self.label.shape[1])
+  def __init__(self, filepath, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
+    '''
+    input
+      label_index: the index of the label column in the dataset; for example, if it's the last column, label_index = -1
+      dimension: int, dimension of variable *dimension* equals the number of hidden layers
+      label_transformation: the string equivalent of "0.0" of the labels; default is None, when no label transformation is necessary
+    '''
+    self.df = pd.read_csv(filepath, header = infer_header)
+    if label_transformation is not None: # need to perform label transformation from string to float
+      self.column_size = len(self.df.columns)
+      self.df.iloc[:,label_index] = self.df.apply(lambda x: 0 if x[self.column_size + label_index] == label_transformation else 1, axis = 1)
+    self.ndarray = self.df.values # convert from pandas df to numpy ndarray
+    self.input = self.ndarray[:, : label_index]
+    self.size = self.input.shape[0] # number of rows of training data
+    self.label = np.reshape(self.ndarray[:, label_index], (self.size, 1)) # has to reshape label into a 2d array
+    self.label_domain = list(np.unique(self.label))
+    # dimension means the number of hidden neurons in each hidden layer, must be a list; len(list) = number of layers
+    self.hidden_layers = len(dimension) # number of hidden layers based on dimension input
+    # always one more weight than number of hidden layers
+    self.weights1 = np.random.rand(self.input.shape[1], dimension[0])
+    self.weights2 = np.random.rand(dimension[0], dimension[1])
+    self.weights3 = np.random.rand(dimension[1], self.label.shape[1])
+    #self.bias = np.random.rand() # bias, y-intercept
     self.iterations = iterations
     self.output = np.zeros(self.label.shape)
+    self.plot = False # no graph by default
+    self.iteration = 0
+    self.start = 0
+    self.end = 0
+    self.time = 0
   
+  '''
   # applying existing Neural Network weights (model hyper-parameters) on input data to validate against real labels
   def feedforward(self):
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
@@ -50,24 +80,98 @@ class NeuralNetwork:
   # training the Neural Network model by updating the weights (model hyper-parameters) from the real labels against previously applied input data
   def backprop(self):
     # application of the chain rule to find derivative of the loss function with respect to weights2 and weights1
-    d_weights2 = np.dot(self.layer1.T, (2*(self.label - self.output) * functions.sigmoid_derivative(self.output)))
-    d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.label - self.output) * functions.sigmoid_derivative(self.output), self.weights2.T) * functions.sigmoid_derivative(self.layer1)))
+    d_weights2 = np.dot(self.layer1.T,
+                        2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
+                 )
+    d_weights1 = np.dot(self.input.T,
+                        np.dot(2 * (self.label - self.output) * functions.sigmoid_derivative(self.output),
+                               self.weights2.T
+                        ) * functions.sigmoid_derivative(self.layer1)
+                 )
 
     # update the weights with the derivative (slope) of the loss function
     self.weights1 += d_weights1
     self.weights2 += d_weights2
+  '''
 
-  def train(self):
-    for i in range(self.iterations):
-      self.feedforward()
-      self.backprop()
+  # with 2 hidden layers, start with 2 layers and 3 weights
+  def feedforward(self):
+    self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
+    self.layer2 = functions.sigmoid(np.dot(self.layer1, self.weights2))
+    self.output = functions.sigmoid(np.dot(self.layer2, self.weights3))
+    self.output_classified = functions.binary_classify(self.output, self.label_domain)
 
-    self.feedforward()
+  def backprop(self):
+    d_weights3 = np.dot(self.layer2.T,
+                        2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
+                 )
+    d_weights2 = np.dot(self.layer1.T,
+                        np.dot(2 * (self.label - self.output) * functions.sigmoid_derivative(self.output),
+                               self.weights3.T
+                        ) * functions.sigmoid_derivative(self.layer2)
+                 )
+    d_weights1 = np.dot(self.input.T,
+                        np.dot(np.dot(2 * (self.label - self.output) * functions.sigmoid_derivative(self.output),
+                                      self.weights3.T
+                               ) * functions.sigmoid_derivative(self.layer2),
+                               self.weights2.T
+                        ) * functions.sigmoid_derivative(self.layer1)
+                 )
 
-  #def test(self):
+    # update the weights with the derivative (slope) of the loss function
+    self.weights1 += d_weights1
+    self.weights2 += d_weights2
+    self.weights3 += d_weights3
 
   def summary(self):
     return self.output
 
-  def total_error(self):
-    return (self.label - self.output)
+  def compute_total_error(self):
+    self.total_error = self.label - self.output
+    return self.total_error
+
+
+  def compute_sme(self):
+    self.sme = np.dot(self.total_error.T, self.total_error).item() * 1.0 / self.size # convert singleton array into a scalar for return
+    print("Iteration {}: {}".format(self.iteration, self.sme))
+    return self.sme
+
+  def reset_iteration(self):
+    self.iteration = 0
+
+  def time_start(self):
+    self.start = time.time()
+
+  def time_end(self):
+    self.end = time.time()
+    self.time = self.end - self.start
+
+  def graph_sme(self, iteration):
+      self.compute_total_error()
+      self.compute_sme()
+      if iteration == 0: # first iteration, set the plot axes
+        plt.axis([0, self.iterations, 0, self.sme])
+        plt.xlabel("Iteration")
+        plt.ylabel("Squared Mean Error")
+        #fig, ax = plt.subplots()
+        #ax.set_ylabel("Squared Mean Error")
+        #ax.set_xlabel("Iteration")
+      plt.scatter(iteration, self.sme, color = 'black', s = 1)
+      plt.pause(0.05) # plots real-time
+      self.plot = True 
+
+  def train(self):
+    for i in range(self.iterations):
+      self.time_start()
+      self.iteration += 1
+      self.feedforward()
+      self.backprop()
+      self.time_end()
+      print("Iteration {} training time: {}".format(self.iteration, self.time))
+      self.graph_sme(i)
+    self.feedforward()
+    print(self.output_classified)
+    if self.plot:
+      plt.show()
+
+  #def test(self):
