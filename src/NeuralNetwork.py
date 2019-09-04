@@ -44,7 +44,7 @@ class NeuralNetwork:
     '''
     input
       label_index: the index of the label column in the dataset; for example, if it's the last column, label_index = -1
-      dimension: int, dimension of variable *dimension* equals the number of hidden layers
+      dimension: list of int, with each element equaling the number of nodes for its corresponding hidden layer; length of the list equals number of hidden layers
       label_transformation: the string equivalent of "0.0" of the labels; default is None, when no label transformation is necessary
     '''
     self.df = pd.read_csv(filepath, header = infer_header)

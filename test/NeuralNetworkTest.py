@@ -1,6 +1,7 @@
 #!/bin/python
 import sys
 import numpy as np
+import ast
 
 sys.path.insert(0, "../src/")
 from NeuralNetwork import NeuralNetwork # since NeuralNetwork class is inside the module/file NeuralNetwork.py
@@ -47,10 +48,9 @@ x = np.array([[0,0,0],
 y = np.array([[0], [0], [0], [0], [1], [1], [1], [1]])
 '''
 
-#dimension = int(sys.argv[1])
-dimension = [4, 4]
-iteration = int(sys.argv[1])
-#nn = NeuralNetwork(x, y, dimension, iteration)
+dimension = ast.literal_eval(sys.argv[1]) # list
+#dimension = [4, 4]
+iteration = int(sys.argv[2]) # int
 nn = NeuralNetwork(filepath, -1, dimension, iteration, infer_header = header, label_transformation = label_transformation)
 
 nn.train()
