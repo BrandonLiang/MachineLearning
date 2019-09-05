@@ -8,6 +8,10 @@ from pyspark.sql import SparkSession
 def sigmoid(x):
     return 1.0/(1+ np.exp(-x.astype(float)))
 
+# first derivative of sigmoid function (for Neural Network back-propagation)
+def sigmoid_derivative(x):
+    return x * (1.0 - x)
+
 # binary classification - works closely with the output from sigmoid function
 # domain specifies the two possible outcomes
 def binary_classify(x, domain):
@@ -15,9 +19,10 @@ def binary_classify(x, domain):
     choicelist = [domain[0], domain[1]]
     return np.select(condlist, choicelist)
 
-# first derivative of sigmoid function (for Neural Network back-propagation)
-def sigmoid_derivative(x):
-    return x * (1.0 - x)
+def reverse_label(x, domain, original_domain):
+    condlist = [x == domain[0], x == domain[1]]
+    choicelist = [original_domain[0], original_domain[1]]
+    return np.select(condlist, choicelist)
 
 # convert csv file into a 2-dimensional numpy array
 def read_csv_as_np(filepath, delim):

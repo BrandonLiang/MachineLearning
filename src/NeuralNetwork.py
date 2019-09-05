@@ -39,8 +39,10 @@ import functions
 # save plot fig
 
 # generalize hidden layers and weights based on $dimension
-# Binary Classify Error Compute!
+# bias at each weight
+# Binary Classify Error Compute! + Confusion Matrix, Precision, Accuracy (done)
 # Reverse Label Transformation for Both Label & Output
+# Predict with original label range (concat onto testing data, on top of actual label column -- ......,label,output)
 
 # *complete NN backpropagation matrix operation write up in notebook!
 
@@ -58,7 +60,6 @@ class NeuralNetwork:
     '''
     self.df = pd.read_csv(filepath, header = infer_header)
     if label_transformation is not None: # need to perform label transformation from string to float
-
       # need to reorder to ensure label_transformation is always at index 0 in this list!
       self.original_label_range = list(np.unique(self.df.values[:, label_index]))
       self.original_label_range.remove(label_transformation)
@@ -70,7 +71,7 @@ class NeuralNetwork:
     self.input = self.ndarray[:, : label_index]
     self.size = self.input.shape[0] # number of rows of training data
     self.label = np.reshape(self.ndarray[:, label_index], (self.size, 1)) # has to reshape label into a 2d array
-    self.label_range = list(np.unique(self.label))
+    self.label_range = list(np.unique(self.label)) # always sorted
     # dimension means the number of hidden neurons in each hidden layer, must be a list; len(list) = number of layers
     self.hidden_layers = len(dimension) # number of hidden layers based on dimension input
     # always one more weight than number of hidden layers
@@ -80,13 +81,18 @@ class NeuralNetwork:
     #self.bias = np.random.rand() # bias, y-intercept
     self.iterations = iterations
     self.output = np.zeros(self.label.shape)
+    self.output_classified = None
     self.plot = False # no graph by default
     self.iteration = 0
-    self.start = 0
-    self.end = 0
-    self.time = 0
+    self.start = None
+    self.end = None
+    self.time = None
   
   '''
+  one weight: d_weights = np.dot(self.input.T,
+                                 2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
+                          )
+
   # applying existing Neural Network weights (model hyper-parameters) on input data to validate against real labels
   def feedforward(self):
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
@@ -105,8 +111,8 @@ class NeuralNetwork:
                  )
 
     # update the weights with the derivative (slope) of the loss function
-    self.weights1 += d_weights1
-    self.weights2 += d_weights2
+    self.weights1 -= d_weights1
+    self.weights2 -= d_weights2
   '''
 
   # with 2 hidden layers, start with 2 layers and 3 weights
@@ -134,9 +140,10 @@ class NeuralNetwork:
                  )
 
     # update the weights with the derivative (slope) of the loss function
-    self.weights1 += d_weights1
-    self.weights2 += d_weights2
-    self.weights3 += d_weights3
+    self.weights1 -= d_weights1
+    self.weights2 -= d_weights2
+    self.weights3 -= d_weights3
+    print(self.weights1)
 
   def summary(self):
     return self.output
@@ -145,11 +152,21 @@ class NeuralNetwork:
     self.total_error = self.label - self.output
     return self.total_error
 
-
   def compute_sme(self):
     self.sme = np.dot(self.total_error.T, self.total_error).item() * 1.0 / self.size # convert singleton array into a scalar for return
     print("Iteration {}: {}".format(self.iteration, self.sme))
     return self.sme
+
+  def binary_classify(self):
+    self.output_classified = functions.binary_classify(self.output, self.label_range)
+
+  # confusion matrix + accuracy + precision
+  def confusion_matrix(self):
+    unique, self.output_classified_unique_count = np.unique(np.equal(self.output_classified, self.label), return_counts = True)
+    self.output_classified_success = dict(zip(unique, self.output_classified_unique_count)).get(True)
+    print("Correct predictions: {}".format(self.output_classified_success))
+    print("Out of total inputs: {}".format(self.size))
+    # self.output_classified vs self.label
 
   def reset_iteration(self):
     self.iteration = 0
@@ -185,6 +202,6 @@ class NeuralNetwork:
       print("Iteration {} training time: {}".format(self.iteration, self.time))
       self.graph_sme(i)
     self.feedforward()
-    print(self.output_classified)
+    self.confusion_matrix()
     if self.plot:
       plt.show()
