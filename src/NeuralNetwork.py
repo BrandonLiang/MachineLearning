@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
-import time
 import functions
 
 # to understand how a Neural Network works
@@ -27,6 +26,8 @@ import functions
 
 # read in file and output a file with prediction
 
+# *training, k-fold cv, testing set!!!
+
 # methods:
 # *cv: training, validation & testing set -- read more about purpose and process of CV!
 # split to train, cv & testing set
@@ -38,6 +39,14 @@ import functions
 # save plot fig
 
 # generalize hidden layers and weights based on $dimension
+# Binary Classify Error Compute!
+# Reverse Label Transformation for Both Label & Output
+
+# *complete NN backpropagation matrix operation write up in notebook!
+
+# Save NN Model
+# Run on Web via Click - fullstack -- Web needs to have Java running!
+# NN for multi-class classification?
 
 class NeuralNetwork:
   def __init__(self, filepath, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
@@ -49,13 +58,19 @@ class NeuralNetwork:
     '''
     self.df = pd.read_csv(filepath, header = infer_header)
     if label_transformation is not None: # need to perform label transformation from string to float
+
+      # need to reorder to ensure label_transformation is always at index 0 in this list!
+      self.original_label_range = list(np.unique(self.df.values[:, label_index]))
+      self.original_label_range.remove(label_transformation)
+      self.original_label_range.insert(0, label_transformation)
+
       self.column_size = len(self.df.columns)
-      self.df.iloc[:,label_index] = self.df.apply(lambda x: 0 if x[self.column_size + label_index] == label_transformation else 1, axis = 1)
+      self.df.iloc[:,label_index] = self.df.apply(lambda x: 0.0 if x[self.column_size + label_index] == label_transformation else 1.0, axis = 1)
     self.ndarray = self.df.values # convert from pandas df to numpy ndarray
     self.input = self.ndarray[:, : label_index]
     self.size = self.input.shape[0] # number of rows of training data
     self.label = np.reshape(self.ndarray[:, label_index], (self.size, 1)) # has to reshape label into a 2d array
-    self.label_domain = list(np.unique(self.label))
+    self.label_range = list(np.unique(self.label))
     # dimension means the number of hidden neurons in each hidden layer, must be a list; len(list) = number of layers
     self.hidden_layers = len(dimension) # number of hidden layers based on dimension input
     # always one more weight than number of hidden layers
@@ -99,7 +114,7 @@ class NeuralNetwork:
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
     self.layer2 = functions.sigmoid(np.dot(self.layer1, self.weights2))
     self.output = functions.sigmoid(np.dot(self.layer2, self.weights3))
-    self.output_classified = functions.binary_classify(self.output, self.label_domain)
+    self.output_classified = functions.binary_classify(self.output, self.label_range)
 
   def backprop(self):
     d_weights3 = np.dot(self.layer2.T,
@@ -173,5 +188,3 @@ class NeuralNetwork:
     print(self.output_classified)
     if self.plot:
       plt.show()
-
-  #def test(self):
