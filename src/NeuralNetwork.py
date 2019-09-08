@@ -50,6 +50,9 @@ import functions
 # Run on Web via Click - fullstack -- Web needs to have Java running!
 # NN for multi-class classification?
 
+# precision + recall
+# refer to 4705/hw0 client code for precision and recall functions + plots
+
 class NeuralNetwork:
   def __init__(self, filepath, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
     '''
@@ -89,14 +92,14 @@ class NeuralNetwork:
     self.time = None
   
   '''
-  one weight: d_weights = np.dot(self.input.T,
-                                 2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
-                          )
-
   # applying existing Neural Network weights (model hyper-parameters) on input data to validate against real labels
   def feedforward(self):
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
     self.output = functions.sigmoid(np.dot(self.layer1, self.weights2))
+
+  one weight: d_weights = np.dot(self.input.T,
+                                 2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
+                          )
 
   # training the Neural Network model by updating the weights (model hyper-parameters) from the real labels against previously applied input data
   def backprop(self):
