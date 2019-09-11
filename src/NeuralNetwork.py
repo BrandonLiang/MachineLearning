@@ -44,7 +44,7 @@ import functions
 # Reverse Label Transformation for Both Label & Output
 # Predict with original label range (concat onto testing data, on top of actual label column -- ......,label,output)
 
-# *complete NN backpropagation matrix operation write up in notebook!
+# *complete NN backpropagation matrix operation write up in notebook! -- see Matrix Calculus in bookmarked web under "Course" in firefox
 
 # Save NN Model
 # Run on Web via Click - fullstack -- Web needs to have Java running!
