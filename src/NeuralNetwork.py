@@ -53,6 +53,43 @@ import functions
 # precision + recall
 # refer to 4705/hw0 client code for precision and recall functions + plots
 
+'''
+more ides (improvement, features, future research):
+  1. sklearn (and also check pytorch) sklearn_metric for confusion matrix, accuracy, precision, recall, f1_score, etc.
+  2. CV
+  3. Training (CV), Dev (Hyperparameter Tuning), Test
+  4. Word Embedding
+  5. Bag of words
+  6. NN for NLP (Einstein + NN4NLP books)
+  7. Deep Learning, Reinforcement Learning, Recurrent Neural Network, Convolutional Neural Network
+  8. ReLu, tanh, softmax, sigmoid - activation function (non-linear)
+  9. Gradient Descent Formula (for Generalizing Backprop with arbitray numbers of hidden layers)
+  10. Stochastic Gradient Descent, Minibatch Stochastic Gradient Descent
+  11. * Learning rate (initial 10e-3), decrease learning rate with each epoch
+  12. Epoch, batch, iteration
+  13. Add attribute .index to retrieve location (other attributes as well)
+  14. * predict, see sklearn_metrics
+  15. Write out Forward and BackPropagation Matrix Operation, Gradient Descent, linear combination, etc.
+  16. * Initialize weight
+    - Xavier initialization
+    - N(0,1)
+    - Uniform(-1,1)
+    The last two are kind of bad random draws because they may result in poetential dead neurons
+  17. * Regularization (L1, L2, which is Lasso & Ridge and their characteristics, adv & disadv)
+  18. * partial_fit (see sklearn)
+  19. Optimizing Gradient Descent
+    ruder.io/optimizing-gradient-descent/
+    - Adagrad
+    - Adaboost
+    - etc.
+  20. Drop Out - YMMV for NLP
+  21. Hinge Loss
+
+Research:
+  1. importantce of hidden layer
+  2. systematic and theoretical way of deciding # of hidden layers and # of neurons/nodes for each layer (except for input & output layers)
+'''
+
 class NeuralNetwork:
   def __init__(self, filepath, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
     '''
