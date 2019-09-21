@@ -50,8 +50,11 @@ import functions
 # Run on Web via Click - fullstack -- Web needs to have Java running!
 # NN for multi-class classification?
 
-# precision + recall
+# precision + recall - confusion matrix
 # refer to 4705/hw0 client code for precision and recall functions + plots
+
+# see decision tree reading of 4771/Lecture 1, Entropy!
+# kd-tree, random forest, deep forest
 
 '''
 more ides (improvement, features, future research):
@@ -84,6 +87,9 @@ more ides (improvement, features, future research):
     - etc.
   20. Drop Out - YMMV for NLP
   21. Hinge Loss
+  22. Multi-class / binary entropy loss
+  23. entropy
+  24. ReLu, Tanh, softmax, sigmoid
 
 Research:
   1. importantce of hidden layer
