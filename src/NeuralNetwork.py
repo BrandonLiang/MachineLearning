@@ -48,7 +48,7 @@ import functions
 
 # Save NN Model
 # Run on Web via Click - fullstack -- Web needs to have Java running!
-# NN for multi-class classification?
+# NN for multi-class classification? i.e.: image recognition? object recognition? hand-written character recognition?
 
 # precision + recall - confusion matrix
 # refer to 4705/hw0 client code for precision and recall functions + plots
