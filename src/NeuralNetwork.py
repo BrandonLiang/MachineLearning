@@ -120,11 +120,28 @@ class NeuralNetwork:
     self.label_range = list(np.unique(self.label)) # always sorted
     # dimension means the number of hidden neurons in each hidden layer, must be a list; len(list) = number of layers
     self.hidden_layers = len(dimension) # number of hidden layers based on dimension input
+
+    # initialize layers, weights and dweights
+    self.layers_dict = {}
+    self.weights_dict = {}
+    self.dweights_dict = {}
+    for layer in range(self.hidden_layers):
+      self.layers_dict[layer + 1] = None
+      if layer == 0:
+        # weight between input and first hidden layer
+        self.weights_dict[layer + 1] = np.random.rand(self.input.shape[1], dimension[0])
+      else:
+        self.weights_dict[layer + 1] = np.random.rand(dimension[layer - 1], dimension[layer])
+      self.dweights_dict[layer + 1] = None
     # always one more weight than number of hidden layers
+    self.weights_dict[layer + 2] = np.random.rand(dimension[layer], self.label.shape[1])
+    self.dweights_dict[layer + 2] = None
+    '''
     self.weights1 = np.random.rand(self.input.shape[1], dimension[0])
     self.weights2 = np.random.rand(dimension[0], dimension[1])
     self.weights3 = np.random.rand(dimension[1], self.label.shape[1])
-    #self.bias = np.random.rand() # bias, y-intercept
+    '''
+    #self.bias = np.random.rand() # bias, y-intercept, one for each hidden layer!
     self.iterations = iterations
     self.output = np.zeros(self.label.shape)
     self.output_classified = None
@@ -163,22 +180,42 @@ class NeuralNetwork:
 
   # with 2 hidden layers, start with 2 layers and 3 weights
   def feedforward(self):
+    '''
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
     self.layer2 = functions.sigmoid(np.dot(self.layer1, self.weights2))
     self.output = functions.sigmoid(np.dot(self.layer2, self.weights3))
+    '''
+    for layer in range(self.hidden_layers):
+      if layer == 0:
+        temp_layer = functions.sigmoid(np.dot(self.input, self.weights_dict[layer + 1]))
+        self.layer_dict.update(layer + 1 = temp_layer)
+      else:
+        temp_layer = functions.sigmoid(np.dot(self.layers_dict[layer], self.weights_dict[layer + 1]))
+        self.layer_dict.update(layer + 1 = temp_layer)
+    self.output = functions.sigmoid(np.dot(self.layers_dict[layer + 1], self.weights_dict[layer + 2]))
     self.output_classified = functions.binary_classify(self.output, self.label_range)
 
+
   def backprop(self):
+    fixed_derivative = 2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
+    for layer in range(self.hidden_layers):
+      if layer != hidden_layers - 1:
+        temp_dweights = np.dot(self.layers_dict.get(self.hidden_layers - layer).T,
+                               fixed_derivative
+                        )
+      else:
+        temp_dweights = np.dot(self.layer_dict.get(self.input.T
+
     d_weights3 = np.dot(self.layer2.T,
-                        2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
+                        fixed_derivative
                  )
     d_weights2 = np.dot(self.layer1.T,
-                        np.dot(2 * (self.label - self.output) * functions.sigmoid_derivative(self.output),
+                        np.dot(fixed_derivative,
                                self.weights3.T
                         ) * functions.sigmoid_derivative(self.layer2)
                  )
     d_weights1 = np.dot(self.input.T,
-                        np.dot(np.dot(2 * (self.label - self.output) * functions.sigmoid_derivative(self.output),
+                        np.dot(np.dot(fixed_derivative,
                                       self.weights3.T
                                ) * functions.sigmoid_derivative(self.layer2),
                                self.weights2.T
@@ -235,6 +272,7 @@ class NeuralNetwork:
         #ax.set_ylabel("Squared Mean Error")
         #ax.set_xlabel("Iteration")
       plt.scatter(iteration, self.sme, color = 'black', s = 1)
+      plt.legend() # try
       plt.pause(0.05) # plots real-time
       self.plot = True 
 
