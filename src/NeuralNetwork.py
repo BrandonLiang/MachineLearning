@@ -58,21 +58,30 @@ import functions
 
 '''
 more ides (improvement, features, future research):
-  1. sklearn (and also check pytorch) sklearn_metric for confusion matrix, accuracy, precision, recall, f1_score, etc.
+  1. sklearn (and also check pytorch) sklearn_metric for confusion matrix, accuracy (error), precision, recall, f1_score, etc.
+    1.1 real-time plot of these metrics vs time, iteration, epoch, batch
+    1.2 real-time plot of NN Output (2D) vs # Neurons + # Hidden Layers (increasing levels of non-linearity/non-linear transformation)
   2. CV
   3. Training (CV), Dev (Hyperparameter Tuning), Test
   4. Word Embedding
   5. Bag of words
   6. NN for NLP (Einstein + NN4NLP books)
   7. Deep Learning, Reinforcement Learning, Recurrent Neural Network, Convolutional Neural Network
-  8. ReLu, tanh, softmax, sigmoid - activation function (non-linear)
-  9. Gradient Descent Formula (for Generalizing Backprop with arbitray numbers of hidden layers)
+  8. * Non-Linear Activation Functions:
+    - Relu
+    - tanh
+    - sigoid
+    - softmax
+    - etc...
+  9. * Gradient Descent Formula (for Generalizing Backprop with arbitray numbers of hidden layers)
   10. Stochastic Gradient Descent, Minibatch Stochastic Gradient Descent
   11. * Learning rate (initial 10e-3), decrease learning rate with each epoch
   12. Epoch, batch, iteration
+    12.1 Minibatch
   13. Add attribute .index to retrieve location (other attributes as well)
-  14. * predict, see sklearn_metrics
-  15. Write out Forward and BackPropagation Matrix Operation, Gradient Descent, linear combination, etc.
+  14. * predict, refer to sklearn_metrics
+    14.1 refer to 4705 HW0 Client Code sample for sklearn_metrics usage style
+  15. * Write out Forward and BackPropagation Matrix Operation, Gradient Descent, linear combination, etc.
   16. * Initialize weight
     - Xavier initialization
     - N(0,1)
@@ -87,9 +96,15 @@ more ides (improvement, features, future research):
     - etc.
   20. Drop Out - YMMV for NLP
   21. Hinge Loss
-  22. Multi-class / binary entropy loss
-  23. entropy
+  22. * Multi-class / binary entropy loss
+  23. * entropy
   24. ReLu, Tanh, softmax, sigmoid
+  25. * Importance of each Hidden Layer and # of Neurons
+  26. * NLP
+    26.1 Collins Parser
+    26.2 word2vec, word embedding
+    26.3 NN for NLP
+    26.4 Neural Theory of Language (N.T.L)
 
 Research:
   1. importantce of hidden layer
