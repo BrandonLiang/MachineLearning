@@ -63,9 +63,12 @@ class Spark_Function:
       return np.array(self.rdd.collect())
 
 class Pandas_Function:
-  def __init__(self, filepath, nrows, low_memory = True):
+  def __init__(self, filepath, nrows, low_memory = True, width = False):
     self.df = pd.read_csv(filepath, encoding = "utf-8", delimiter = ",", low_memory = low_memory, nrows = int(nrows))
+    self.width = width
 
   def df_show(self):
+    if (self.width):
+      pd.set_option("max_colwidth", -1)
     print(self.df.to_string())
     return
