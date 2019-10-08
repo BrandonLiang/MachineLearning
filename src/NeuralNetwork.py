@@ -94,6 +94,7 @@ more ides (improvement, features, future research):
   22. Multi-class / binary entropy loss
   23. entropy
   24. ReLu, Tanh, softmax, sigmoid
+  25. * from 4771 Prof. Verma, the number of neurons in each (hidden layer) should increase EXPONENTIALLY! (*)
 
 Research:
   1. importantce of hidden layer
