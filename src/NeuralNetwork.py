@@ -86,7 +86,11 @@ more ides (improvement, features, future research):
     - Xavier initialization
     - N(0,1)
     - Uniform(-1,1)
-    The last two are kind of bad random draws because they may result in poetential dead neurons
+    The last two are kind of bad random draws because they may result in poetential dead neurons (?)
+  16.1 * Initialize Weight Research: https://hackernoon.com/how-to-initialize-weights-in-a-neural-net-so-it-performs-well-3e9302d4490f
+    - Relu & Tanh -> using N(0,1) & multiply the sample with square root of (1/ni) where ni is the number of input units for that layer
+    - Tanh in output no term -> using N(0,1) & multiply the sample with square root of (1/(ni + no)) where (ni + no) is the number of input units for that layer
+      W = np.random.rand((x_dim,y_dim))*np.sqrt(1/(ni+no))
   17. * Regularization (L1, L2, which is Lasso & Ridge and their characteristics, adv & disadv)
   18. * partial_fit (see sklearn)
   19. Optimizing Gradient Descent
@@ -105,6 +109,7 @@ more ides (improvement, features, future research):
     26.2 word2vec, word embedding
     26.3 NN for NLP
     26.4 Neural Theory of Language (N.T.L)
+  27. * from 4771 Prof. Verma, the number of neurons in each (hidden layer) should increase EXPONENTIALLY! (*)
 
 Research:
   1. importantce of hidden layer
@@ -112,14 +117,19 @@ Research:
 '''
 
 class NeuralNetwork:
-  def __init__(self, filepath, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
+  def __init__(self, file_input, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
     '''
     input
       label_index: the index of the label column in the dataset; for example, if it's the last column, label_index = -1
       dimension: list of int, with each element equaling the number of nodes for its corresponding hidden layer; length of the list equals number of hidden layers
       label_transformation: the string equivalent of "0.0" of the labels; default is None, when no label transformation is necessary
     '''
-    self.df = pd.read_csv(filepath, header = infer_header)
+    if (type(file_input) is pd.core.frame.DataFrame):
+      self.df = dataframe
+    elif (type(file_input) is str):
+      self.df = pd.read_csv(filepath, header = infer_header)
+    else:
+      print("must have one input from dataframe or filepath") # sys error - stderr
     if label_transformation is not None: # need to perform label transformation from string to float
       # need to reorder to ensure label_transformation is always at index 0 in this list!
       self.original_label_range = list(np.unique(self.df.values[:, label_index]))
@@ -208,8 +218,7 @@ class NeuralNetwork:
         temp_layer = functions.sigmoid(np.dot(self.layers_dict[layer], self.weights_dict[layer + 1]))
         self.layer_dict.update(layer + 1 = temp_layer)
     self.output = functions.sigmoid(np.dot(self.layers_dict[layer + 1], self.weights_dict[layer + 2]))
-    self.output_classified = functions.binary_classify(self.output, self.label_range)
-
+    self.output_classified = functions.binary_classify(self.output, self.label_range) # make it flexible here!
 
   def backprop(self):
     fixed_derivative = 2 * (self.label - self.output) * functions.sigmoid_derivative(self.output)
@@ -241,7 +250,6 @@ class NeuralNetwork:
     self.weights1 -= d_weights1
     self.weights2 -= d_weights2
     self.weights3 -= d_weights3
-    print(self.weights1)
 
   def summary(self):
     return self.output
