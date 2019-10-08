@@ -97,14 +97,19 @@ Research:
 '''
 
 class NeuralNetwork:
-  def __init__(self, filepath, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
+  def __init__(self, file_input, label_index, dimension, iterations, infer_header = 'infer', label_transformation = None):
     '''
     input
       label_index: the index of the label column in the dataset; for example, if it's the last column, label_index = -1
       dimension: list of int, with each element equaling the number of nodes for its corresponding hidden layer; length of the list equals number of hidden layers
       label_transformation: the string equivalent of "0.0" of the labels; default is None, when no label transformation is necessary
     '''
-    self.df = pd.read_csv(filepath, header = infer_header)
+    if (type(file_input) is pd.core.frame.DataFrame):
+      self.df = dataframe
+    elif (type(file_input) is str):
+      self.df = pd.read_csv(filepath, header = infer_header)
+    else:
+      print("must have one input from dataframe or filepath") # sys error - stderr
     if label_transformation is not None: # need to perform label transformation from string to float
       # need to reorder to ensure label_transformation is always at index 0 in this list!
       self.original_label_range = list(np.unique(self.df.values[:, label_index]))
@@ -166,7 +171,7 @@ class NeuralNetwork:
     self.layer1 = functions.sigmoid(np.dot(self.input, self.weights1))
     self.layer2 = functions.sigmoid(np.dot(self.layer1, self.weights2))
     self.output = functions.sigmoid(np.dot(self.layer2, self.weights3))
-    self.output_classified = functions.binary_classify(self.output, self.label_range)
+    self.output_classified = functions.binary_classify(self.output, self.label_range) # make it flexible here!
 
   def backprop(self):
     d_weights3 = np.dot(self.layer2.T,
@@ -189,7 +194,6 @@ class NeuralNetwork:
     self.weights1 -= d_weights1
     self.weights2 -= d_weights2
     self.weights3 -= d_weights3
-    print(self.weights1)
 
   def summary(self):
     return self.output
