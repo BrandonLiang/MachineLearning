@@ -77,7 +77,11 @@ more ides (improvement, features, future research):
     - Xavier initialization
     - N(0,1)
     - Uniform(-1,1)
-    The last two are kind of bad random draws because they may result in poetential dead neurons
+    The last two are kind of bad random draws because they may result in poetential dead neurons (?)
+  16.1 * Initialize Weight Research: https://hackernoon.com/how-to-initialize-weights-in-a-neural-net-so-it-performs-well-3e9302d4490f
+    - Relu & Tanh -> using N(0,1) & multiply the sample with square root of (1/ni) where ni is the number of input units for that layer
+    - Tanh in output no term -> using N(0,1) & multiply the sample with square root of (1/(ni + no)) where (ni + no) is the number of input units for that layer
+      W = np.random.rand((x_dim,y_dim))*np.sqrt(1/(ni+no))
   17. * Regularization (L1, L2, which is Lasso & Ridge and their characteristics, adv & disadv)
   18. * partial_fit (see sklearn)
   19. Optimizing Gradient Descent
